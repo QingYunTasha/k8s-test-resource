@@ -1,0 +1,43 @@
+#image from https://hub.docker.com/r/vad1mo/hello-world-rest/
+# What is this sevice good for?
+# Easy test reverse proxy routes and paths.
+# Use this service as a dummy to see if request reach your service correctly.
+# Use it to test load balancers by peeking at the out and see the host/ip.
+# Use it for Hello World demo projects that respond the request back.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-deployment
+  labels:
+    app: hello-world
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+      - name: hello-world
+        image: vad1mo/hello-world-rest
+        ports:
+        - containerPort: 5050
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-service
+spec:
+  ports:
+  - nodePort: 31074
+    port: 5050
+    protocol: TCP
+    targetPort: 5050
+  selector:
+    app: hello-world
+  type: NodePort
+
